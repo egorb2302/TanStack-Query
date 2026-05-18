@@ -1,7 +1,29 @@
- {
+{
   "tasks": [
-    { "id": 1, "title": "Выучить TanStack Query", "completed": false, "priority": "high" },
-    { "id": 2, "title": "Настроить json-server", "completed": true, "priority": "medium" },
-    { "id": 3, "title": "Написать тесты", "completed": false, "priority": "low" }
-  ]
+    {
+      "id": "1",
+      "title": "Выучить TanStack Query",
+      "completed": true,
+      "priority": "high"
+    },
+    {
+      "id": "2",
+      "title": "Настроить json-server",
+      "completed": true,
+      "priority": "medium"
+    },
+    {
+      "title": "asdasd",
+      "priority": "medium",
+      "completed": false,
+      "id": "uDV9BwUCLRo"
+    },
+    {
+      "title": "asdasd",
+      "priority": "low",
+      "completed": false,
+      "id": "JkRxTKH7dwA"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

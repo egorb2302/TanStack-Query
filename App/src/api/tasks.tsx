@@ -2,28 +2,34 @@ import type { Task } from '../types/types.tsx';
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-export const fetchTasks = async (): Promise<Task> => {
+export const fetchTasks = async (priority?: string): Promise<Task[]> => {
     await delay(500);
-    const response = await fetch('http://localhost:3000/tasks');
+    const url = priority && priority !== 'all'
+     ? `http://localhost:3000/tasks?priority=${priority}`
+     : 'http://localhost:3000/tasks' 
+
+    const response = await fetch(url);
     if (!response.ok) throw new Error(`Error: ${response.status}`)
-    const data = await response.json();
+    const data: Task[] = await response.json();
+    console.log(data);
     return data;
 }
 
 export const addTask = async (newTask: Omit<Task, 'id'>): Promise<Task> => {
     await delay(500);
+    const withUniqeId = {...newTask, id: Date.now()};
     const response = await fetch('http://localhost:3000/tasks', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newTask)
+        body: JSON.stringify(withUniqeId)
     })
     if (!response.ok) throw new Error(`Error: ${response.status}`)
     return response.json()
 }
 
-export const deleteTask = async (id: number): Promise<void> => {
+export const deleteTask = async (id: string | undefined): Promise<void> => {
     await delay(500);
     const response = await fetch(`http://localhost:3000/tasks/${id}`, {
         method: 'DELETE',
@@ -34,7 +40,7 @@ export const deleteTask = async (id: number): Promise<void> => {
     if (!response.ok) throw new Error(`Error: ${response.status}`)
 }
 
-export const updateStatus = async (id: number, status: Partial<Task>): Promise<Task> => {
+export const updateStatus = async (id: string | undefined, status: Partial<Task>): Promise<Task> => {
     await delay(500);
     const response = await fetch(`http://localhost:3000/tasks/${id}`, {
         method: 'PATCH',
@@ -47,11 +53,18 @@ export const updateStatus = async (id: number, status: Partial<Task>): Promise<T
     return response.json()
 }
 
-export const filteredFetch = async (): Promise<Task> => {
+export const fetchSoloTask = async(id: string | undefined): Promise<Task> => {
     await delay(500);
-    const response = await fetch('http://localhost:3000/tasks?priority=high');
-    if (!response.ok) throw new Error(`Error: ${response.status}`)
-
-    const filteredData = await response.json();
-    return filteredData
+    const response = await fetch(`http://localhost:3000/tasks/${id}`)
+    const data: Task = await response.json()
+    return data
 }
+
+// export const filteredFetch = async (): Promise<Task> => {
+//     await delay(500);
+//     const response = await fetch('http://localhost:3000/tasks?priority=high');
+//     if (!response.ok) throw new Error(`Error: ${response.status}`)
+
+//     const filteredData = await response.json();
+//     return filteredData
+// }
