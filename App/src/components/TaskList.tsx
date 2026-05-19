@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteTask, fetchTasks } from "../api/tasks";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import type { Task } from "../types/types";
 
 export default function TaskList() {
     const client = useQueryClient();
@@ -17,6 +18,21 @@ export default function TaskList() {
 
     const mutation = useMutation({
         mutationFn: deleteTask,
+        onMutate: async (deletedId) => {
+            client.cancelQueries({ queryKey: ['tasks'] })
+
+            const backup = client.getQueryData(['tasks']);
+
+            client.setQueryData(['tasks'], (old: Task[] | undefined) => {
+                return old?.filter(task => task.id === deletedId)
+            })
+
+            return { backup }
+        },
+        onError: (err, deletedId, context) => {
+            client.setQueryData(['tasks'], context?.backup)
+            console.error(`Error ${err} in element with id ${deletedId}`)
+        },
         onSuccess: () => {
             client.invalidateQueries({ queryKey: ['tasks'] })
         }

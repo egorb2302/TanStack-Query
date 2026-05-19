@@ -13,16 +13,16 @@
       "priority": "medium"
     },
     {
-      "title": "asdasd",
-      "priority": "medium",
+      "title": "Add Positive update of UI",
+      "priority": "high",
       "completed": false,
-      "id": "uDV9BwUCLRo"
+      "id": "zm6i58TuCk0"
     },
     {
-      "title": "asdasd",
+      "title": "Feed myself",
       "priority": "low",
       "completed": false,
-      "id": "JkRxTKH7dwA"
+      "id": "EdnEIuJqxvw"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
