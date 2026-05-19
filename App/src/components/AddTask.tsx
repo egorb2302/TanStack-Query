@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addTask } from "../api/tasks";
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import type { Task } from '../types/types';
 
 export default function AddTask() {
     const client = useQueryClient();
@@ -10,9 +11,29 @@ export default function AddTask() {
     const nav = useNavigate(); 
 
     const mutation = useMutation({
-        mutationFn: addTask,
+        mutationFn: addTask,   
+        onMutate: async (newID) => {
+            client.cancelQueries({ queryKey: ['tasks'] })
+
+            const backup = client.getQueryData(['tasks'])
+            const tempTask: Task = {
+                ...newID,
+                id: `temp-${Date.now()}`,
+                completed: false,
+            }
+
+            client.setQueryData(['tasks'], (old: Task[] | undefined) => {
+                return [...(old ?? []), tempTask]
+            })
+
+            return { backup }
+        },
+        onError: (err, newID, context) => {
+            client.setQueryData(['tasks'], context?.backup)
+            console.error(`Error ${err} of adding task with id ${newID}`)
+        },
         onSuccess: () => {
-            client.invalidateQueries({ queryKey: ['tasks']})
+            client.invalidateQueries({ queryKey: ['tasks'] })
         }
     })
 

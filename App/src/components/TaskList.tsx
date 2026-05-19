@@ -24,7 +24,7 @@ export default function TaskList() {
             const backup = client.getQueryData(['tasks']);
 
             client.setQueryData(['tasks'], (old: Task[] | undefined) => {
-                return old?.filter(task => task.id === deletedId)
+                return old?.filter(task => task.id !== deletedId)
             })
 
             return { backup }
