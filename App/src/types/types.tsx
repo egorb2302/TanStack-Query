@@ -6,3 +6,9 @@ export interface Task {
 }
 
 export type PriorityType = 'high' | 'low' | 'medium';
+
+export interface TasksResponse<T> {
+    data: T[],
+    hasMore: boolean,
+    nextPage: number | null,
+}

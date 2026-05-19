@@ -1,4 +1,4 @@
-import type { Task } from '../types/types.tsx';
+import type { Task, TasksResponse } from '../types/types.tsx';
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
@@ -58,6 +58,27 @@ export const fetchSoloTask = async(id: string | undefined): Promise<Task> => {
     const response = await fetch(`http://localhost:3000/tasks/${id}`)
     const data: Task = await response.json()
     return data
+}
+
+export const fetchPagination = async (page: number, priority?: string ): Promise<TasksResponse<Task>> => {
+    await delay(500);
+
+    const params = new URLSearchParams();
+    params.set('_page', page.toString());
+    params.set('_limit', '3');
+
+    if (priority && priority !== 'all') {
+        params.set('priority', priority)
+    }
+
+    const response = await fetch(`http://localhost:3000/tasks`);
+    const totalCount = response.headers.get('X-Total-Count');
+    const data = await response.json();
+
+    const total = totalCount ? parseInt(totalCount) : 0;
+    const hasMore = page * 3 < total;
+
+    return {data, hasMore, nextPage: hasMore ? page + 1 : null};
 }
 
 // export const filteredFetch = async (): Promise<Task> => {

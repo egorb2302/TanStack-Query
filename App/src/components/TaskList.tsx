@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 export default function TaskList() {
     const client = useQueryClient();
     const [priority, setPriority] = useState<string>('all');
+    const [currentPage, setCurrentPage] = useState<number>(1);
+
+    const PAGES_PER_VIEW: number = 3;
 
     const { data: tasks, isLoading, error, refetch } = useQuery({
         queryKey: ['tasks', priority],
@@ -21,6 +24,11 @@ export default function TaskList() {
 
     if (isLoading) return <div>Loading...</div>
     if (error) throw new Error(`Error: ${error}`)
+
+    const totalPages = Math.ceil((tasks?.length ?? 0) / PAGES_PER_VIEW);
+    const startIndex = (currentPage - 1) * PAGES_PER_VIEW;
+    const endIndex = startIndex + PAGES_PER_VIEW;
+    const currentTasks = tasks?.slice(startIndex, endIndex) ?? [];
 
     return (
         <div>
@@ -40,7 +48,7 @@ export default function TaskList() {
             </div>
             <div>
                 <ul>
-                    {tasks?.map(task => (
+                    {currentTasks.map(task => (
                         <li style={{border: '2px solid black', width: '300px'}} key={task.id}>
                             <Link to={`/tasks/${task.id}`}>
                                 <strong>{task.title}</strong><br></br> 
@@ -53,6 +61,15 @@ export default function TaskList() {
                         </li>
                     ))}
                 </ul>
+                <button onClick={() => setCurrentPage(p => p - 1)}
+                    disabled={currentPage === 1}>
+                        Prev
+                </button>
+                <span>Страница {currentPage} из {totalPages}</span>
+                <button onClick={() => setCurrentPage(p => p + 1)}
+                    disabled={currentPage === totalPages}>
+                        Next
+                </button>
             </div>
         </div>
     )
